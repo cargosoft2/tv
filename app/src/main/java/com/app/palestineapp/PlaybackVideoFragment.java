@@ -13,16 +13,14 @@ import androidx.leanback.app.VideoSupportFragmentGlueHost;
 import androidx.leanback.media.MediaPlayerAdapter;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.PlaybackControlsRow;
-import android.media.AudioManager;
-import android.view.Surface;
-import android.view.TextureView;
-import android.widget.Toast;
+
 
 /**
  * Handles video playback with media controls.
  */
 public class PlaybackVideoFragment extends VideoSupportFragment {
 
+    private static final Object YOUTUBE_API_KEY = "AIzaSyCmuyx5l-AO572FIsPjHqTNhJ7XQOK7UNg";
     private PlaybackTransportControlGlue<MediaPlayerAdapter> mTransportControlGlue;
 
     @Override
@@ -39,11 +37,38 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         VideoSupportFragmentGlueHost glueHost =
                 new VideoSupportFragmentGlueHost(PlaybackVideoFragment.this);
 
-        // Set up the MediaPlayerAdapter for video playback
+        String videoUrl = movie.getVideoUrl();
+        if (isYouTubeUrl(videoUrl)) {
+
+        } else {
+            // Handle regular video playback (e.g., from a server or local file)
+            initializeMediaPlayerAdapter(videoUrl, glueHost, movie);
+        }
+
+    }
+
+    private boolean isYouTubeUrl(String url) {
+        return url != null && url.contains("youtube.com") || url.contains("youtu.be");
+    }
+
+
+
+    private String extractYouTubeVideoId(String url) {
+        // Extracts the video ID from a YouTube URL
+        String videoId = null;
+        if (url.contains("v=")) {
+            videoId = url.split("v=")[1];
+            if (videoId.contains("&")) {
+                videoId = videoId.split("&")[0]; // In case the URL has additional parameters
+            }
+        }
+        return videoId;
+    }
+
+    private void initializeMediaPlayerAdapter(String videoUrl, VideoSupportFragmentGlueHost glueHost, Movie movie) {
         MediaPlayerAdapter playerAdapter = new MediaPlayerAdapter(getActivity());
         playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE);
 
-        // Set up the Transport Control Glue for playback controls
         mTransportControlGlue = new PlaybackTransportControlGlue<>(getActivity(), playerAdapter);
         mTransportControlGlue.setHost(glueHost);
         mTransportControlGlue.setTitle(movie.getTitle());
@@ -51,21 +76,12 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         mTransportControlGlue.playWhenPrepared();
 
         // Set the data source (video URL)
-        playerAdapter.setDataSource(Uri.parse(movie.getVideoUrl()));
+        playerAdapter.setDataSource(Uri.parse(videoUrl));
 
         // Optional: Set up Equalizer for better sound quality
         setupEqualizer(playerAdapter);
-
-        // Optional: Ensure hardware acceleration is enabled for better performance
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            // Ensure hardware acceleration if using SurfaceView or TextureView
-            TextureView textureView = getActivity().findViewById(com.google.android.exoplayer2.source.dash.R.id.accessibility_custom_action_10);
-            if (textureView != null) {
-                Surface surface = new Surface(textureView.getSurfaceTexture());
-                playerAdapter.getMediaPlayer().setSurface(surface);
-            }
-        }
     }
+
 
     @Override
     public void onPause() {

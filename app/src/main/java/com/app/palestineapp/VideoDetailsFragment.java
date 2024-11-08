@@ -105,7 +105,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         Log.d(TAG, "doInBackground: " + mSelectedMovie.toString());
         final DetailsOverviewRow row = new DetailsOverviewRow(mSelectedMovie);
         row.setImageDrawable(
-                ContextCompat.getDrawable(getActivity(), R.drawable.default_background));
+                ContextCompat.getDrawable(getActivity(), R.color.background_gradient_end));
         int width = convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
         Glide.with(getActivity())
@@ -167,18 +167,12 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     private void setupRelatedMovieListRow() {
         String subcategories[] = {getString(R.string.related_movies)};
         List<Movie> list = MovieList.getList();
-//        InputStream inputStream = getResources().openRawResource(R.raw.movies);
-//        List<M3UParser.Movie> list = M3UParser.parseM3U(inputStream);
 
         Collections.shuffle(list);
         ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new CardPresenter());
         for (Movie movie : list) {
             listRowAdapter.add(movie);
         }
-//        for (int j = 0; j < NUM_COLS ; j++) {
-//            listRowAdapter.add(list.get(j));
-//        }
-
         HeaderItem header = new HeaderItem(0, subcategories[0]);
         mAdapter.add(new ListRow(header, listRowAdapter));
         mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
