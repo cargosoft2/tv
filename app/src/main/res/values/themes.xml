@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.PalestineAPP" parent="@style/Theme.Leanback"/>
+</resources>
