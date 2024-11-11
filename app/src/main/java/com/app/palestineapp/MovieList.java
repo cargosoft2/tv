@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public final class MovieList {
     private static Map<String, Set<Movie>> allMovies;
     private static long count = 0;
-    private static Set<String> filter = Set.of("Germany", "Islamic","Syrian","Palestine","YouTube", "Qatar","Saudi Arabia", "Jordan","General","Kids","News","Religious","Education","Sports","Music","Movies");
+    private static Set<String> filter = Set.of("Tunisia","Egypt","Undefined","Germany", "Islamic","Syrian","Palestine","YouTube", "Qatar","Saudi Arabia", "Jordan","General","Kids","News","Religious","Education","Sports","Music","Movies");
 
     private static Set<String>movieIds = new HashSet<>();
 
@@ -50,6 +50,9 @@ public final class MovieList {
                 if(line.contains("Not 24/7")) {
                     continue;
                 }
+                if(line.contains("Blocked")) {
+                    continue;
+                }
                 if (line.startsWith("#EXTINF")) {
                     Matcher matcher = extInfPattern.matcher(line);
                     if (matcher.find()) {
@@ -67,14 +70,11 @@ public final class MovieList {
                         tvgLogo = "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review/card.jpg";  // Default logo
                     }
 
-                    if ( url != null && groupTitle != null) {
+                    if (groupTitle != null) {
                         // Efficiently build and add movies to their respective groups
                         Movie movie = buildMovieInfo(title, groupTitle, tvgName, url, tvgLogo);
-                        if(groupTitle != null && filter.contains(groupTitle)){
+                        if(filter.contains(groupTitle)){
                             Set<Movie> movies = allMovies.get(groupTitle);
-                            if(movieIds.contains(movie.getVideoUrl())){
-                               // continue;
-                            }
 
                             if(movies == null){
                                 movies = new HashSet<>();
@@ -82,7 +82,7 @@ public final class MovieList {
                                 allMovies.put(groupTitle, movies);
                                 movieIds.add(movie.getVideoUrl());
                             }else {
-                                allMovies.get(groupTitle).add(movie);
+                                Objects.requireNonNull(allMovies.get(groupTitle)).add(movie);
                                 movieIds.add(movie.getVideoUrl());
                             }
 

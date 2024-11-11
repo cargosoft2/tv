@@ -14,6 +14,8 @@ import androidx.leanback.media.MediaPlayerAdapter;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.PlaybackControlsRow;
 
+import java.util.Objects;
+
 
 /**
  * Handles video playback with media controls.
@@ -75,7 +77,7 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         mTransportControlGlue.setSubtitle(movie.getDescription());
         mTransportControlGlue.playWhenPrepared();
 
-        // Set the data source (video URL)
+       // Set the data source (video URL)
         playerAdapter.setDataSource(Uri.parse(videoUrl));
 
         // Optional: Set up Equalizer for better sound quality
@@ -139,7 +141,9 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
 
             // Optionally, adjust the equalizer presets (if needed)
             equalizer.usePreset((short) 0); // Use preset 0 (Flat preset) or any other preset
+            setMaxVolume();
         }
+
     }
 
     /**
